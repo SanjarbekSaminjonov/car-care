@@ -1059,3 +1059,43 @@ Har bir texnik qaror quyidagi mezonlar bo‘yicha baholanadi:
 - smart feature’larni keyin qo‘shishda og‘riq bermaslik
 
 Loyiha hozirdan shunday qurilishi kerakki, keyin reminders, OCR, recommendation engine, EV support va AI layer qo‘shilganda arxitektura sinib ketmasin.
+
+## PROJECT_CONTEXT.md Update Policy
+
+Loyihada `PROJECT_CONTEXT.md` fayli mavjud.
+
+Bu fayl loyiha holatini qisqacha ko‘rsatadi va barcha agentlar uchun asosiy kontekst hisoblanadi.
+
+### Qachon yangilanadi
+
+Quyidagi holatlarda yangilash majburiy:
+
+1. Yangi sprint boshlansa
+2. Arxitektura o‘zgarsa
+3. Yangi katta modul qo‘shilsa
+4. Loyihaning asosiy yo‘nalishi o‘zgarsa
+
+### Qachon yangilanmaydi
+
+Quyidagi holatlarda yangilash kerak emas:
+
+* kichik tasklar
+* bug fixlar
+* kichik refactorlar
+* field qo‘shish
+
+### Kim yangilaydi
+
+* sprint boshlanganda: loyiha egasi
+* arxitektura o‘zgarganda: qaror qabul qilgan developer
+
+### Muhim
+
+`PROJECT_CONTEXT.md`:
+
+* qisqa bo‘lishi kerak
+* doim aktual bo‘lishi kerak
+* AI agentlar uchun kontekst sifatida ishlatiladi
+
+Agar bu fayl eskirsa:
+→ butun development sifati tushadi
