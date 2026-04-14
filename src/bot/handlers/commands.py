@@ -1,0 +1,27 @@
+from dataclasses import dataclass
+
+from bot.formatters.messages import format_help_message, format_start_message
+from bot.keyboards.main_menu import build_main_menu_keyboard
+
+
+@dataclass(frozen=True)
+class BotReply:
+    chat_id: int
+    text: str
+    reply_markup: dict | None = None
+
+
+class CommandHandlers:
+    def handle_start(self, chat_id: int) -> BotReply:
+        return BotReply(
+            chat_id=chat_id,
+            text=format_start_message(),
+            reply_markup=build_main_menu_keyboard(),
+        )
+
+    def handle_help(self, chat_id: int) -> BotReply:
+        return BotReply(
+            chat_id=chat_id,
+            text=format_help_message(),
+            reply_markup=build_main_menu_keyboard(),
+        )

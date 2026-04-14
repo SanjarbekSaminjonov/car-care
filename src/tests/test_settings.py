@@ -13,6 +13,19 @@ class SettingsSmokeTests(SimpleTestCase):
     def test_users_app_is_installed(self) -> None:
         self.assertIn("apps.users.apps.UsersConfig", settings.INSTALLED_APPS)
 
+    def test_telegram_app_is_installed(self) -> None:
+        self.assertIn("apps.telegram.apps.TelegramConfig", settings.INSTALLED_APPS)
+
+    def test_core_domain_apps_are_installed(self) -> None:
+        self.assertIn("apps.cars.apps.CarsConfig", settings.INSTALLED_APPS)
+        self.assertIn("apps.odometer.apps.OdometerConfig", settings.INSTALLED_APPS)
+        self.assertIn("apps.maintenance.apps.MaintenanceConfig", settings.INSTALLED_APPS)
+
+    def test_default_database_engine_is_postgresql(self) -> None:
+        self.assertEqual(
+            settings.DATABASES["default"]["ENGINE"], "django.db.backends.postgresql"
+        )
+
     def test_runtime_paths_are_outside_src(self) -> None:
         self.assertEqual(settings.MEDIA_ROOT, Path(settings.ROOT_DIR) / "var" / "media")
         self.assertEqual(settings.STATIC_ROOT, Path(settings.ROOT_DIR) / "var" / "static")
