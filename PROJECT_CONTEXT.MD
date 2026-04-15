@@ -80,25 +80,28 @@ Loyiha qat’iy rules asosida ishlaydi:
 
 ## 6. Current State
 
-* Current sprint: 0 (Setup)
-* Status: Sprint 0 foundation ready
+* Current sprint: 2 (Bot MVP)
+* Status: Sprint 2 bot MVP delivered
 * Completed:
 
   * Rules system
   * Issue tracking structure
   * TASK-001 (Django init)
-  * Split settings (`base`, `local`, `production`)
-  * Custom User foundation
-  * `/health/` smoke endpoint
-  * Default project-level smoke test discovery
-  * Local bootstrap for `manage.py check/test` (process env + local-safe defaults)
-  * Verification snapshot (2026-04-09):
-    * `python3 src/manage.py check` -> no issues
-    * `python3 src/manage.py test` -> 7 tests passed
-* Next in queue:
-
   * TASK-002 (Docker setup)
   * TASK-003 (Postgres integration)
+  * TASK-004 (Custom User model)
+  * TASK-005 (TelegramAccount model)
+  * TASK-006 (Basic admin setup)
+  * Split settings (`base`, `local`, `production`)
+  * `/health/` smoke endpoint
+  * Default project-level smoke test discovery
+  * Docker-based local stack (`web` + `db`)
+
+* Next in queue:
+
+  * Sprint 3 planning: sharing + notifications
+  * Bot flowlarni production-hardening (error handling, retries, observability)
+  * Integration/e2e testlarni kengaytirish
 
 ---
 

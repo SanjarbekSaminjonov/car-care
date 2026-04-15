@@ -27,6 +27,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "apps.users.apps.UsersConfig",
+    "apps.telegram.apps.TelegramConfig",
+    "apps.cars.apps.CarsConfig",
+    "apps.odometer.apps.OdometerConfig",
+    "apps.maintenance.apps.MaintenanceConfig",
 ]
 
 MIDDLEWARE = [
