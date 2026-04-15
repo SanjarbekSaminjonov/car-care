@@ -55,6 +55,27 @@ class UpdateDispatcherTests(SimpleTestCase):
         assert reply is not None
         self.assertIn("hali mashina yo'q", reply.text)
 
+
+    def test_dispatch_main_menu_button_text_routes_to_commands(self) -> None:
+        test_cases = [
+            ("🚗 Mening mashinalarim", "hali mashina yo'q"),
+            ("➕ Mashina qo'shish", "Davlat raqamini"),
+            ("🛠 Servis qo'shish", "Qaysi mashina"),
+            ("📈 Odometr yangilash", "Davlat raqamini"),
+            ("❓ Yordam", "Quyidagi buyruqlar"),
+        ]
+
+        for button_text, expected_text in test_cases:
+            with self.subTest(button_text=button_text):
+                update = {"message": {"chat": {"id": 11}, "text": button_text}}
+
+                with mock.patch("bot.handlers.car_flow.list_cars_for_chat", return_value=[]):
+                    reply = self.dispatcher.dispatch(update)
+
+                self.assertIsNotNone(reply)
+                assert reply is not None
+                self.assertIn(expected_text, reply.text)
+
     def test_dispatch_unknown_message_returns_none(self) -> None:
         update = {"message": {"chat": {"id": 1}, "text": "hello"}}
 
