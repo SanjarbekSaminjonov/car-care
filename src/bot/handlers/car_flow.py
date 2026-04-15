@@ -1,5 +1,5 @@
 from bot.handlers.commands import BotReply
-from selectors.car_selector import list_cars_for_chat
+from queries.car_selector import list_cars_for_chat
 from services.car_service import create_car_for_chat
 from services.conversation_state_service import clear_flow_state, get_flow_state, save_flow_state
 
