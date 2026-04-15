@@ -2,11 +2,11 @@ from django.utils import timezone
 
 from apps.cars.models import Car
 from apps.odometer.models import OdometerEntry, OdometerSource
-from apps.telegram.models import TelegramAccount
+from services.telegram_account_service import get_telegram_account_for_chat
 
 
 def create_odometer_for_chat(*, chat_id: int, plate_number: str, value: int) -> OdometerEntry:
-    telegram_account = TelegramAccount.objects.select_related("user").get(chat_id=chat_id)
+    telegram_account = get_telegram_account_for_chat(chat_id=chat_id)
     normalized_plate = Car.normalize_plate(plate_number)
 
     car = Car.objects.get(

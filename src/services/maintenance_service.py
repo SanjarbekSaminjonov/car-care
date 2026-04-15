@@ -10,7 +10,7 @@ from apps.maintenance.models import (
     MaintenanceRecord,
     MaintenanceStatus,
 )
-from apps.telegram.models import TelegramAccount
+from services.telegram_account_service import get_telegram_account_for_chat
 
 
 @transaction.atomic
@@ -23,7 +23,7 @@ def create_maintenance_for_chat(
     item_name: str,
     item_amount: Decimal,
 ) -> MaintenanceRecord:
-    telegram_account = TelegramAccount.objects.select_related("user").get(chat_id=chat_id)
+    telegram_account = get_telegram_account_for_chat(chat_id=chat_id)
 
     normalized_plate = Car.normalize_plate(plate_number)
     car = Car.objects.get(
