@@ -16,11 +16,15 @@ class UpdateDispatcher:
     def dispatch(self, update: dict[str, Any]) -> BotReply | None:
         message = update.get("message") or {}
         chat = message.get("chat") or {}
+        telegram_user = message.get("from") or {}
         chat_id = chat.get("id")
+        telegram_user_id = telegram_user.get("id")
         text = (message.get("text") or "").strip()
 
         if not isinstance(chat_id, int):
             return None
+        if not isinstance(telegram_user_id, int):
+            telegram_user_id = None
 
         if text == "/cancel":
             self.car_flow_handlers.cancel(chat_id=chat_id)
@@ -28,15 +32,27 @@ class UpdateDispatcher:
             self.odometer_flow_handlers.cancel(chat_id=chat_id)
             return BotReply(chat_id=chat_id, text="Joriy flow bekor qilindi.")
 
-        maintenance_reply = self.maintenance_flow_handlers.handle_flow_input(chat_id=chat_id, text=text)
+        maintenance_reply = self.maintenance_flow_handlers.handle_flow_input(
+            chat_id=chat_id,
+            text=text,
+            telegram_user_id=telegram_user_id,
+        )
         if maintenance_reply is not None:
             return maintenance_reply
 
-        odometer_reply = self.odometer_flow_handlers.handle_flow_input(chat_id=chat_id, text=text)
+        odometer_reply = self.odometer_flow_handlers.handle_flow_input(
+            chat_id=chat_id,
+            text=text,
+            telegram_user_id=telegram_user_id,
+        )
         if odometer_reply is not None:
             return odometer_reply
 
-        car_reply = self.car_flow_handlers.handle_flow_input(chat_id=chat_id, text=text)
+        car_reply = self.car_flow_handlers.handle_flow_input(
+            chat_id=chat_id,
+            text=text,
+            telegram_user_id=telegram_user_id,
+        )
         if car_reply is not None:
             return car_reply
 

@@ -16,7 +16,7 @@ class MaintenanceFlowHandlers:
     def cancel(self, chat_id: int) -> None:
         clear_flow_state(chat_id=chat_id, flow_name=FLOW_NAME)
 
-    def handle_flow_input(self, chat_id: int, text: str) -> BotReply | None:
+    def handle_flow_input(self, chat_id: int, text: str, telegram_user_id: int | None = None) -> BotReply | None:
         state = get_flow_state(chat_id=chat_id, flow_name=FLOW_NAME)
         if state is None:
             return None
@@ -67,6 +67,8 @@ class MaintenanceFlowHandlers:
         if state.state_name == "awaiting_confirm":
             if text.lower() != "yes":
                 return BotReply(chat_id=chat_id, text="Tasdiqlash uchun 'yes' deb yozing yoki /cancel qiling.")
+            if telegram_user_id is None:
+                return BotReply(chat_id=chat_id, text="Telegram foydalanuvchi aniqlanmadi. /start bilan qayta urinib ko'ring.")
 
             plate_number = payload.get("plate_number")
             title = payload.get("title")
@@ -85,6 +87,7 @@ class MaintenanceFlowHandlers:
 
             record = create_maintenance_for_chat(
                 chat_id=chat_id,
+                telegram_user_id=telegram_user_id,
                 plate_number=plate_number,
                 title=title,
                 odometer=odometer,
