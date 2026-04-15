@@ -16,8 +16,8 @@ class TelegramAccountAdmin(admin.ModelAdmin):
     )
     list_filter = ("is_blocked", "language_code", "created_at")
     search_fields = (
-        "telegram_user_id",
-        "chat_id",
+        "=telegram_user_id",
+        "=chat_id",
         "username",
         "first_name",
         "last_name",
@@ -34,7 +34,7 @@ class TelegramAccountAdmin(admin.ModelAdmin):
 class BotConversationStateAdmin(admin.ModelAdmin):
     list_display = ("chat_id", "flow_name", "state_name", "expires_at", "updated_at")
     list_filter = ("flow_name", "state_name")
-    search_fields = ("chat_id", "flow_name", "state_name")
+    search_fields = ("=chat_id", "flow_name", "state_name")
     autocomplete_fields = ("telegram_account",)
     readonly_fields = ("created_at", "updated_at")
     ordering = ("-updated_at",)
