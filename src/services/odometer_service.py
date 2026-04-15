@@ -5,8 +5,13 @@ from apps.odometer.models import OdometerEntry, OdometerSource
 from services.telegram_account_service import get_telegram_account_for_chat
 
 
-def create_odometer_for_chat(*, chat_id: int, plate_number: str, value: int) -> OdometerEntry:
-    telegram_account = get_telegram_account_for_chat(chat_id=chat_id)
+def create_odometer_for_chat(
+    *, chat_id: int, telegram_user_id: int, plate_number: str, value: int
+) -> OdometerEntry:
+    telegram_account = get_telegram_account_for_chat(
+        chat_id=chat_id,
+        telegram_user_id=telegram_user_id,
+    )
     normalized_plate = Car.normalize_plate(plate_number)
 
     car = Car.objects.get(
