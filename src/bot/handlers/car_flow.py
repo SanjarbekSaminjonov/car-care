@@ -1,7 +1,12 @@
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+
 from bot.handlers.commands import BotReply
+from bot.handlers.errors import format_validation_error
 from queries.car_selector import list_cars_for_chat
 from services.car_service import create_car_for_chat
 from services.conversation_state_service import clear_flow_state, get_flow_state, save_flow_state
+from apps.telegram.models import TelegramAccount
 
 FLOW_NAME = "car_add"
 
@@ -79,14 +84,27 @@ class CarFlowHandlers:
                 clear_flow_state(chat_id=chat_id, flow_name=FLOW_NAME)
                 return BotReply(chat_id=chat_id, text="Flow xatosi. /addcar bilan qaytadan boshlang.")
 
-            car = create_car_for_chat(
-                chat_id=chat_id,
-                telegram_user_id=telegram_user_id,
-                plate_number=plate_number,
-                brand=brand,
-                model=model,
-                year=int(text),
-            )
+            try:
+                car = create_car_for_chat(
+                    chat_id=chat_id,
+                    telegram_user_id=telegram_user_id,
+                    plate_number=plate_number,
+                    brand=brand,
+                    model=model,
+                    year=int(text),
+                )
+            except ValidationError as exc:
+                return BotReply(chat_id=chat_id, text=format_validation_error(exc))
+            except IntegrityError:
+                return BotReply(
+                    chat_id=chat_id,
+                    text="Bu davlat raqami yoki VIN allaqachon mavjud.",
+                )
+            except TelegramAccount.DoesNotExist:
+                return BotReply(
+                    chat_id=chat_id,
+                    text="Telegram account topilmadi. /start bilan qayta urinib ko'ring.",
+                )
             clear_flow_state(chat_id=chat_id, flow_name=FLOW_NAME)
             return BotReply(
                 chat_id=chat_id,

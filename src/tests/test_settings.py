@@ -20,6 +20,9 @@ class SettingsSmokeTests(SimpleTestCase):
         self.assertIn("apps.cars.apps.CarsConfig", settings.INSTALLED_APPS)
         self.assertIn("apps.odometer.apps.OdometerConfig", settings.INSTALLED_APPS)
         self.assertIn("apps.maintenance.apps.MaintenanceConfig", settings.INSTALLED_APPS)
+        self.assertIn("apps.assistant.apps.AssistantConfig", settings.INSTALLED_APPS)
+        self.assertIn("apps.audit.apps.AuditConfig", settings.INSTALLED_APPS)
+        self.assertIn("apps.notifications.apps.NotificationsConfig", settings.INSTALLED_APPS)
 
     def test_default_database_engine_is_postgresql(self) -> None:
         self.assertEqual(

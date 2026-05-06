@@ -15,6 +15,7 @@ class ConversationStateServiceTests(SimpleTestCase):
     @mock.patch("services.conversation_state_service.TelegramAccount")
     def test_save_flow_state_calls_update_or_create(self, telegram_account_model, state_model) -> None:
         telegram_account_model.objects.filter.return_value.first.return_value = None
+        state_model.objects.update_or_create.return_value = (mock.Mock(), True)
 
         save_flow_state(
             chat_id=1,

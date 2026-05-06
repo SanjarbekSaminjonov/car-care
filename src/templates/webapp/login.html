@@ -1,0 +1,65 @@
+{% load static %}
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>CarCare</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="{% static 'webapp/app.css' %}">
+  </head>
+  <body class="auth-body">
+    <main class="auth-panel">
+      <div class="brand brand-auth">
+        <span class="brand-mark">C</span>
+        <span>
+          <strong>CarCare</strong>
+          <small>Telegram Web App</small>
+        </span>
+      </div>
+      <div id="authStatus" class="auth-status">Kirish tekshirilmoqda...</div>
+      {% if debug %}
+        <form class="dev-login" method="get">
+          <label for="dev_telegram_user_id">Dev Telegram user ID</label>
+          <div class="inline-form">
+            <input id="dev_telegram_user_id" name="dev_telegram_user_id" inputmode="numeric" placeholder="1737798711">
+            <button type="submit">Kirish</button>
+          </div>
+        </form>
+      {% endif %}
+    </main>
+
+    <script>
+      const webApp = window.Telegram?.WebApp;
+      const statusNode = document.getElementById("authStatus");
+
+      webApp?.ready();
+      webApp?.expand();
+
+      async function authenticate() {
+        const initData = webApp?.initData || "";
+        if (!initData) {
+          statusNode.textContent = "Appni Telegram ichidan oching.";
+          return;
+        }
+
+        const response = await fetch("{% url 'webapp:telegram_auth' %}", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          credentials: "same-origin",
+          body: JSON.stringify({init_data: initData}),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+          statusNode.textContent = payload.message || "Kirish amalga oshmadi.";
+          return;
+        }
+        window.location.href = payload.redirect_url;
+      }
+
+      authenticate().catch(() => {
+        statusNode.textContent = "Kirishda xatolik yuz berdi.";
+      });
+    </script>
+  </body>
+</html>

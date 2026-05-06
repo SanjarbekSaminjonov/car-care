@@ -21,6 +21,13 @@ class MaintenanceItemType(models.TextChoices):
     OTHER = "other", "Other"
 
 
+class MaintenanceMediaType(models.TextChoices):
+    IMAGE = "image", "Image"
+    VIDEO = "video", "Video"
+    DOCUMENT = "document", "Document"
+    AUDIO = "audio", "Audio"
+
+
 class MaintenanceRecord(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="maintenance_records")
@@ -28,6 +35,7 @@ class MaintenanceRecord(models.Model):
     odometer = models.PositiveBigIntegerField()
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -40,6 +48,7 @@ class MaintenanceRecord(models.Model):
         blank=True,
         related_name="paid_maintenance_records",
     )
+    paid_by_label = models.CharField(max_length=255, blank=True)
     status = models.CharField(max_length=16, choices=MaintenanceStatus.choices, default=MaintenanceStatus.DRAFT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -48,7 +57,10 @@ class MaintenanceRecord(models.Model):
         db_table = "maintenance_records"
         verbose_name = "maintenance record"
         verbose_name_plural = "maintenance records"
-        indexes = [models.Index(fields=["car", "event_date"]), models.Index(fields=["status"])]
+        indexes = [
+            models.Index(fields=["car", "event_date"], name="maintenanc_car_id_ffd987_idx"),
+            models.Index(fields=["status"], name="maintenanc_status_206c4b_idx"),
+        ]
 
     def __str__(self) -> str:
         return f"{self.car.plate_number} - {self.title}"
@@ -81,7 +93,44 @@ class MaintenanceLineItem(models.Model):
         db_table = "maintenance_line_items"
         verbose_name = "maintenance line item"
         verbose_name_plural = "maintenance line items"
-        indexes = [models.Index(fields=["item_type"])]
+        indexes = [models.Index(fields=["item_type"], name="maintenanc_item_ty_16945b_idx")]
 
     def __str__(self) -> str:
         return f"{self.name} ({self.item_type})"
+
+
+class MaintenanceMediaAttachment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    maintenance_record = models.ForeignKey(
+        MaintenanceRecord,
+        on_delete=models.CASCADE,
+        related_name="media_attachments",
+    )
+    media_type = models.CharField(max_length=16, choices=MaintenanceMediaType.choices)
+    telegram_file_id = models.CharField(max_length=512)
+    telegram_file_unique_id = models.CharField(max_length=255, blank=True)
+    file_name = models.CharField(max_length=255, blank=True)
+    mime_type = models.CharField(max_length=255, blank=True)
+    file_size = models.PositiveBigIntegerField(null=True, blank=True)
+    caption = models.TextField(blank=True)
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="uploaded_maintenance_media",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "maintenance_media_attachments"
+        verbose_name = "maintenance media attachment"
+        verbose_name_plural = "maintenance media attachments"
+        indexes = [
+            models.Index(fields=["maintenance_record", "created_at"], name="maint_media_record_time_idx"),
+            models.Index(fields=["media_type"], name="maint_media_type_idx"),
+        ]
+
+    def __str__(self) -> str:
+        label = self.file_name or self.media_type
+        return f"{self.maintenance_record_id} - {label}"

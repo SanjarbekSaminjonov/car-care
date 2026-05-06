@@ -1,0 +1,91 @@
+{% extends "webapp/base.html" %}
+
+{% block title %}CarCare Dashboard{% endblock %}
+
+{% block topbar_action %}
+  {% if manageable_cars %}
+    <a class="icon-action" href="{% url 'webapp:maintenance_create' %}" aria-label="Servis qo'shish">+</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <section class="summary-grid">
+    <div class="metric">
+      <span>Mashinalar</span>
+      <strong>{{ cars|length }}</strong>
+    </div>
+    <div class="metric">
+      <span>Servislar</span>
+      <strong>{{ recent_records|length }}</strong>
+    </div>
+  </section>
+
+  {% if cars %}
+    <section class="section">
+      <div class="section-heading">
+        <h1>Mashinalar</h1>
+        {% if manageable_cars %}
+          <a href="{% url 'webapp:maintenance_create' %}">Servis qo'shish</a>
+        {% endif %}
+      </div>
+      <div class="car-list">
+        {% for car in cars %}
+          <article class="car-card">
+            <div>
+              <div class="plate">{{ car.plate_number }}</div>
+              <h2>{{ car.brand }} {{ car.model }}</h2>
+              <p>{{ car.year }} yil</p>
+            </div>
+            <div class="odometer">
+              <span>Odometr</span>
+              <strong>{% if car.current_odometer %}{{ car.current_odometer }} km{% else %}--{% endif %}</strong>
+            </div>
+            <a class="card-link" href="{% url 'webapp:maintenance_create' %}?car={{ car.id }}">Servis</a>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <section class="empty-state">
+      <h1>Mashina topilmadi</h1>
+      <p>Bot orqali mashina qo'shing yoki invite orqali mashinaga qo'shiling.</p>
+    </section>
+  {% endif %}
+
+  <section class="section">
+    <div class="section-heading">
+      <h1>Oxirgi servislar</h1>
+      <span>{{ today|date:"Y-m-d" }}</span>
+    </div>
+    {% if recent_records %}
+      <div class="timeline">
+        {% for record in recent_records %}
+          <article class="timeline-item">
+            <div class="timeline-date">{{ record.event_date|date:"M d" }}</div>
+            <div class="timeline-body">
+              <div class="record-title">
+                <h2>{{ record.title }}</h2>
+                <span>{{ record.car.plate_number }}</span>
+              </div>
+              <p>{{ record.odometer }} km · {{ record.total_amount|floatformat:0 }} so'm</p>
+              {% with items=record.line_items.all %}
+                {% if items %}
+                  <div class="chips">
+                    {% for item in items|slice:":3" %}
+                      <span>{{ item.name }}</span>
+                    {% endfor %}
+                    {% if record.media_count %}
+                      <span>{{ record.media_count }} media</span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-line">Servis tarixi hali yo'q.</div>
+    {% endif %}
+  </section>
+{% endblock %}

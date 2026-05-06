@@ -31,6 +31,10 @@ INSTALLED_APPS = [
     "apps.cars.apps.CarsConfig",
     "apps.odometer.apps.OdometerConfig",
     "apps.maintenance.apps.MaintenanceConfig",
+    "apps.audit.apps.AuditConfig",
+    "apps.notifications.apps.NotificationsConfig",
+    "apps.assistant.apps.AssistantConfig",
+    "apps.webapp.apps.WebAppConfig",
 ]
 
 MIDDLEWARE = [
@@ -143,4 +147,29 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = env.int(
 )
 DATA_UPLOAD_MAX_MEMORY_SIZE = env.int(
     "DJANGO_DATA_UPLOAD_MAX_MEMORY_SIZE", default=5 * 1024 * 1024
+)
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+
+AI_ASSISTANT_ENABLED = env.bool("AI_ASSISTANT_ENABLED", default=False)
+AI_ASSISTANT_PROVIDER = env.str("AI_ASSISTANT_PROVIDER", default="openai-compatible")
+AI_ASSISTANT_API_KEY = env.str("AI_ASSISTANT_API_KEY", default="")
+AI_ASSISTANT_BASE_URL = env.str(
+    "AI_ASSISTANT_BASE_URL",
+    default="https://api.openai.com/v1",
+)
+AI_ASSISTANT_MODEL = env.str("AI_ASSISTANT_MODEL", default="gpt-4o-mini")
+AI_ASSISTANT_TIMEOUT_SECONDS = env.int("AI_ASSISTANT_TIMEOUT_SECONDS", default=30)
+AI_ASSISTANT_MAX_CONTEXT_RECORDS = env.int("AI_ASSISTANT_MAX_CONTEXT_RECORDS", default=5)
+
+TELEGRAM_BOT_TOKEN = env.str("TELEGRAM_BOT_TOKEN", default="")
+TELEGRAM_WEBAPP_URL = env.str("TELEGRAM_WEBAPP_URL", default="")
+TELEGRAM_WEBAPP_AUTH_MAX_AGE_SECONDS = env.int(
+    "TELEGRAM_WEBAPP_AUTH_MAX_AGE_SECONDS",
+    default=86400,
 )

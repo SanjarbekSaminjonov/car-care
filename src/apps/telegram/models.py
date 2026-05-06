@@ -27,9 +27,9 @@ class TelegramAccount(models.Model):
         verbose_name = "telegram account"
         verbose_name_plural = "telegram accounts"
         indexes = [
-            models.Index(fields=["user"]),
-            models.Index(fields=["chat_id"]),
-            models.Index(fields=["is_blocked"]),
+            models.Index(fields=["user"], name="telegram_ac_user_id_4a1f42_idx"),
+            models.Index(fields=["chat_id"], name="telegram_ac_chat_id_83994e_idx"),
+            models.Index(fields=["is_blocked"], name="telegram_ac_is_bloc_176130_idx"),
         ]
 
     def __str__(self) -> str:
@@ -67,9 +67,37 @@ class BotConversationState(models.Model):
             models.UniqueConstraint(fields=["chat_id", "flow_name"], name="uq_bot_state_chat_flow")
         ]
         indexes = [
-            models.Index(fields=["chat_id", "flow_name"]),
-            models.Index(fields=["expires_at"]),
+            models.Index(fields=["chat_id", "flow_name"], name="bot_convers_chat_id_d2f0ee_idx"),
+            models.Index(fields=["expires_at"], name="bot_convers_expires_82b4db_idx"),
         ]
 
     def __str__(self) -> str:
         return f"chat={self.chat_id} flow={self.flow_name} state={self.state_name}"
+
+
+class ProcessedTelegramUpdate(models.Model):
+    class Status(models.TextChoices):
+        PROCESSING = "processing", "Processing"
+        PROCESSED = "processed", "Processed"
+
+    update_id = models.BigIntegerField(unique=True)
+    chat_id = models.BigIntegerField(null=True, blank=True)
+    telegram_user_id = models.BigIntegerField(null=True, blank=True)
+    update_type = models.CharField(max_length=64, blank=True)
+    status = models.CharField(max_length=16, choices=Status.choices, default=Status.PROCESSED)
+    processed_at = models.DateTimeField(null=True, blank=True, default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "processed_telegram_updates"
+        verbose_name = "processed Telegram update"
+        verbose_name_plural = "processed Telegram updates"
+        indexes = [
+            models.Index(fields=["status"], name="proc_tg_status_63af2f_idx"),
+            models.Index(fields=["processed_at"], name="proc_tg_processed_b0f18c_idx"),
+            models.Index(fields=["chat_id"], name="processed_t_chat_id_a5f6db_idx"),
+        ]
+
+    def __str__(self) -> str:
+        return str(self.update_id)

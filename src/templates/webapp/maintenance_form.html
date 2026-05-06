@@ -1,0 +1,74 @@
+{% extends "webapp/base.html" %}
+
+{% block title %}Servis qo'shish{% endblock %}
+
+{% block topbar_action %}
+  <a class="text-action" href="{% url 'webapp:dashboard' %}">Yopish</a>
+{% endblock %}
+
+{% block content %}
+  <section class="form-header">
+    <h1>Servis yozuvi</h1>
+    <p>Sana, odometr va xarajatni kiriting.</p>
+  </section>
+
+  {% if manageable_cars %}
+    <form class="form-surface" method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-errors">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <label>
+        <span>Mashina</span>
+        <select name="car_id" required>
+          <option value="">Tanlang</option>
+          {% for car in manageable_cars %}
+            <option value="{{ car.id }}" {% if form.car_id.value|stringformat:"s" == car.id|stringformat:"s" %}selected{% endif %}>
+              {{ car.plate_number }} · {{ car.brand }} {{ car.model }}
+            </option>
+          {% endfor %}
+        </select>
+        {{ form.car_id.errors }}
+      </label>
+
+      <label>
+        <span>Servis nomi</span>
+        <input name="title" value="{{ form.title.value|default_if_none:'' }}" placeholder="Motor moyi almashtirish" required>
+        {{ form.title.errors }}
+      </label>
+
+      <div class="split-fields">
+        <label>
+          <span>Sana</span>
+          <input type="date" name="event_date" value="{{ form.event_date.value|date:'Y-m-d'|default:form.event_date.value }}" required>
+          {{ form.event_date.errors }}
+        </label>
+        <label>
+          <span>Odometr</span>
+          <input type="number" name="odometer" value="{{ form.odometer.value|default_if_none:'' }}" min="1" inputmode="numeric" placeholder="120000" required>
+          {{ form.odometer.errors }}
+        </label>
+      </div>
+
+      <label>
+        <span>Xarajat nomi</span>
+        <input name="item_name" value="{{ form.item_name.value|default_if_none:'' }}" placeholder="Motor moyi, filtr, ish haqi" required>
+        {{ form.item_name.errors }}
+      </label>
+
+      <label>
+        <span>Summa</span>
+        <input type="number" name="item_amount" value="{{ form.item_amount.value|default_if_none:'' }}" min="1" step="1000" inputmode="decimal" placeholder="350000" required>
+        {{ form.item_amount.errors }}
+      </label>
+
+      <button class="primary-button" type="submit">Saqlash</button>
+    </form>
+  {% else %}
+    <section class="empty-state">
+      <h1>Huquq yo'q</h1>
+      <p>Servis yozuvi qo'shish uchun owner yoki manager bo'lishingiz kerak.</p>
+    </section>
+  {% endif %}
+{% endblock %}

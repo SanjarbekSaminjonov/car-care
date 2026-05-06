@@ -13,6 +13,13 @@ class OdometerSource(models.TextChoices):
 
 class OdometerEntry(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="odometer_entries")
+    maintenance_record = models.ForeignKey(
+        "maintenance.MaintenanceRecord",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="odometer_entries",
+    )
     value = models.PositiveBigIntegerField()
     entry_date = models.DateField()
     source = models.CharField(max_length=32, choices=OdometerSource.choices)
@@ -29,7 +36,10 @@ class OdometerEntry(models.Model):
         db_table = "odometer_entries"
         verbose_name = "odometer entry"
         verbose_name_plural = "odometer entries"
-        indexes = [models.Index(fields=["car", "entry_date"]), models.Index(fields=["source"])]
+        indexes = [
+            models.Index(fields=["car", "entry_date"], name="odometer_en_car_id_4cd278_idx"),
+            models.Index(fields=["source"], name="odometer_en_source_72a52a_idx"),
+        ]
 
     def __str__(self) -> str:
         return f"{self.car.plate_number}: {self.value} km"

@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 
 from bot.handlers.commands import CommandHandlers
 
@@ -20,3 +20,18 @@ class CommandHandlersTests(SimpleTestCase):
         self.assertEqual(reply.chat_id, 321)
         self.assertIn("/help", reply.text)
         self.assertIsNotNone(reply.reply_markup)
+
+    @override_settings(TELEGRAM_WEBAPP_URL="https://example.com/app/")
+    def test_app_handler_returns_webapp_button(self) -> None:
+        reply = self.handlers.handle_app(chat_id=321)
+
+        self.assertEqual(reply.chat_id, 321)
+        self.assertIn("Web App", reply.text)
+        self.assertEqual(
+            reply.reply_markup,
+            {
+                "inline_keyboard": [
+                    [{"text": "🌐 CarCare App", "web_app": {"url": "https://example.com/app/"}}]
+                ]
+            },
+        )
